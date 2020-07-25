@@ -73,12 +73,12 @@ export class Dms {
 
         // strip off any sign or compass dir'n & split out separate d/m/s
         const dmsParts = String(dms).trim().replace(/^-/, '').replace(/[NSEW]$/i, '').split(/[^0-9.,]+/);
-        if (dmsParts[dmsParts.length-1]=='') dmsParts.splice(dmsParts.length-1);  // from trailing symbol
+        if (dmsParts[dmsParts.length-1]==='') dmsParts.splice(dmsParts.length-1);  // from trailing symbol
 
         if (dmsParts.length === 0) return NaN;
 
         // and convert to decimal degrees...
-        let deg: Number;
+        let deg: number;
         switch (dmsParts.length) {
             case 3:  // interpret 3-part result as d/m/s
                 deg = Number(dmsParts[0]) + Number(dmsParts[1])/60 + Number(dmsParts[2])/3600;
@@ -88,9 +88,6 @@ export class Dms {
                 break;
             case 1:  // just d (possibly decimal) or non-separated dddmmss
                 deg = Number(dmsParts[0]);
-                // check for fixed-width unseparated format eg 0033709W
-                //if (/[NS]/i.test(dmsParts)) deg = '0' + deg;  // - normalise N/S to 3-digit degrees
-                //if (/[0-9]{7}/.test(deg)) deg = deg.slice(0,3)/1 + deg.slice(3,5)/60 + deg.slice(5)/3600;
                 break;
             default:
                 return NaN;
@@ -115,9 +112,9 @@ export class Dms {
      * @returns {string} Degrees formatted as deg/min/secs according to specified format.
      */
     static toDms(deg: number | string, format:string ='d', dp: 6|4|2|0=6): string {
-        if (typeof deg == 'number' && isNaN(deg)) return '';  // give up here if we can't make a number from deg
-        if (typeof deg == 'string' && deg.trim() == '') return 'null';
-        if (deg == Infinity) return 'null';
+        if (typeof deg === 'number' && isNaN(deg)) return '';  // give up here if we can't make a number from deg
+        if (typeof deg === 'string' && deg.trim() === '') return 'null';
+        if (deg === Infinity) return 'null';
         if (deg == null) return 'null';
 
         // default values
@@ -132,7 +129,10 @@ export class Dms {
 
         const degrees: number = Math.abs(Number(deg));  // (unsigned result ready for appending compass dir'n)
 
-        let dms:string = '', d:number = NaN, m:number = NaN, s:number = NaN;
+        let dms:string = ''
+        let d:number = NaN
+        let m:number = NaN
+        let s:number = NaN
         switch (format) {
             default: // invalid format spec!
             case 'd': case 'deg':
@@ -141,15 +141,15 @@ export class Dms {
             case 'dm': case 'deg+min':
                 d = Math.floor(degrees);                       // get component deg
                 m = ((degrees*60) % 60)                    // get component min
-                if (m == 60) { m = 0; d++; }               // check for rounding up
+                if (m === 60) { m = 0; d++; }               // check for rounding up
                 dms = d + '°'+Dms.separator + m.toFixed(dp) + '′';
                 break;
             case 'dms': case 'deg+min+sec':
                 d = Math.floor(degrees);                       // get component deg
                 m = Math.floor((degrees*3600)/60) % 60;        // get component min
                 s = (degrees*3600 % 60);                    // get component sec & round/right-pad
-                if (s == 60) { s = 0; m++; }               // check for rounding up
-                if (m == 60) { m = 0; d++; }               // check for rounding up
+                if (s === 60) { s = 0; m++; }               // check for rounding up
+                if (m === 60) { m = 0; d++; }               // check for rounding up
                 dms = d + '°'+Dms.separator + m + '′'+Dms.separator + s.toFixed(dp) + '″';
                 break;
         }
@@ -315,11 +315,6 @@ export class Dms {
     }
 
 }
-
-
-// Extend Number object with methods to convert between degrees & radians
-//Number.prototype.toRadians = function() { return this * Math.PI / 180; };
-//Number.prototype.toDegrees = function() { return this * 180 / Math.PI; };
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
